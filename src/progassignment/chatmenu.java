@@ -26,7 +26,7 @@ public class chatmenu {
 
                 case 2:
                     recentmessages rm = new recentmessages();
-                    rm.recent();
+                    rm.displayMenu();
                     break;
 
                 case 3:

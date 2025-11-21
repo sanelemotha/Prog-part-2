@@ -24,7 +24,7 @@ public class sendingmessages {
         
         int numOfMes = Integer.parseInt(numInput);
 
-        // ✅ Get the recipient number using phone number validation
+        // Get the recipient number using phone number validation
         String recipient;
         while (true) {
             recipient = JOptionPane.showInputDialog(null, "Enter recipient's phone number (+27...)");
@@ -72,11 +72,13 @@ public class sendingmessages {
             // Generate Unique ID
             String messageId = generateUniqueId();
 
-            // Send options
-            String[] options = {"Send Message", "Disregard Message"};
+            // Send options - ADDED "Store Message" OPTION
+            String[] options = {"Send Message", "Store Message", "Disregard Message"};
             int choice = JOptionPane.showOptionDialog(null,
-                    "Choose an option for your message:\n\n" + 
-                    "Message: " + message + "\n" +
+                    """
+                    Choose an option for your message:
+                    
+                    Message: """ + message + "\n" +
                     "Message ID: " + messageId + "\n" +
                     "Recipient: " + recipient,
                     "Message Options",
@@ -87,15 +89,44 @@ public class sendingmessages {
             switch (choice) {
                 case 0: // Send Message
                     JOptionPane.showMessageDialog(null, 
-                        "=== MESSAGE SENT ===\n\n" +
-                        "Message ID: " + messageId + "\n" +
+                        """
+                        === MESSAGE SENT ===
+                        
+                        Message ID: """ + messageId + "\n" +
                         "Recipient: " + recipient + "\n" +
                         "Message: " + message + "\n\n" +
                         "Number of messages sent: " + messageCounter);
+
+                    // Generate hash & store in arrays using the new method
+                    Message temp = new Message(messageId, recipient, message);
+                    String hash = temp.createMessageHash();
+                    Message.addSentMessage(messageId, recipient, message, hash);
                     break;
-                case 1: // Disregard Message
+
+                case 1: // Store Message - NEW OPTION
+                    // Create Message object and call storeMessage() which handles JSON
+                    Message storeTemp = new Message(messageId, recipient, message);
+                    storeTemp.storeMessage(); // This will show the JSON dialog
+                    
+                    // Also add to stored messages array
+                    String storeHash = storeTemp.createMessageHash();
+                    Message.addStoredMessage(messageId, recipient, message, storeHash);
+                    
+                    JOptionPane.showMessageDialog(null, 
+                        """
+                        === MESSAGE STORED ===
+                        
+                        Message ID: """ + messageId + "\n" +
+                        "Recipient: " + recipient + "\n" +
+                        "Message: " + message + "\n\n" +
+                        "Message has been stored successfully!");
+                    break;
+
+                case 2: // Disregard Message
                     JOptionPane.showMessageDialog(null, "Message " + messageCounter + " has been disregarded.");
+                    Message.addDisregardedMessage(messageId, message);
                     break;
+                    
                 default: // User closed dialog
                     JOptionPane.showMessageDialog(null, "Operation cancelled for message " + messageCounter);
                     break;
@@ -104,8 +135,10 @@ public class sendingmessages {
         
         // Show final summary
         JOptionPane.showMessageDialog(null, 
-            "=== MESSAGING COMPLETE ===\n\n" +
-            "Total messages processed: " + messageCounter + "\n" +
+            """
+            === MESSAGING COMPLETE ===
+            
+            Total messages processed: """ + messageCounter + "\n" +
             "Recipient: " + recipient + "\n\n" +
             "Thank you for using the messaging system!");
     }

@@ -1,22 +1,19 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package progassignment;
 
-/**
- *
- * @author RC_Student_Lab
- */
 import javax.swing.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
 
-
-
 public class Message {
+    // All required arrays
+    public static ArrayList<String> sentMessages = new ArrayList<>();
+    public static ArrayList<String> disregardedMessages = new ArrayList<>();
+    public static ArrayList<String> storedMessages = new ArrayList<>();
+    public static ArrayList<String> messageHashes = new ArrayList<>();
+    public static ArrayList<String> messageIDs = new ArrayList<>();
+    public static ArrayList<String> recipients = new ArrayList<>();
 
     private String messageID;
     private String recipientCell;
@@ -103,43 +100,61 @@ public class Message {
         return messageList.size();
     }
 
-    // Stores messages in a JSON array (simulation)
-   // Stores messages in a JSON array (simulation)
-// Stores messages using simple string concatenation
-public void storeMessage() {
-    messageList.add(this);
-    
-    StringBuilder jsonBuilder = new StringBuilder();
-    jsonBuilder.append("[\n");
-    
-    for (int i = 0; i < messageList.size(); i++) {
-        Message msg = messageList.get(i);
-        jsonBuilder.append("  {\n");
-        jsonBuilder.append("    \"messageID\": \"").append(msg.messageID).append("\",\n");
-        jsonBuilder.append("    \"recipientCell\": \"").append(msg.recipientCell).append("\",\n");
-        jsonBuilder.append("    \"messageText\": \"").append(escapeJsonString(msg.messageText)).append("\",\n");
-        jsonBuilder.append("    \"sent\": ").append(msg.sent).append(",\n");
-        jsonBuilder.append("    \"hash\": \"").append(msg.createMessageHash()).append("\"\n");
-        jsonBuilder.append("  }");
+    // Stores messages using simple string concatenation
+    public void storeMessage() {
+        messageList.add(this);
         
-        if (i < messageList.size() - 1) {
-            jsonBuilder.append(",");
+        StringBuilder jsonBuilder = new StringBuilder();
+        jsonBuilder.append("[\n");
+        
+        for (int i = 0; i < messageList.size(); i++) {
+            Message msg = messageList.get(i);
+            jsonBuilder.append("  {\n");
+            jsonBuilder.append("    \"messageID\": \"").append(msg.messageID).append("\",\n");
+            jsonBuilder.append("    \"recipientCell\": \"").append(msg.recipientCell).append("\",\n");
+            jsonBuilder.append("    \"messageText\": \"").append(escapeJsonString(msg.messageText)).append("\",\n");
+            jsonBuilder.append("    \"sent\": ").append(msg.sent).append(",\n");
+            jsonBuilder.append("    \"hash\": \"").append(msg.createMessageHash()).append("\"\n");
+            jsonBuilder.append("  }");
+            
+            if (i < messageList.size() - 1) {
+                jsonBuilder.append(",");
+            }
+            jsonBuilder.append("\n");
         }
-        jsonBuilder.append("\n");
+        
+        jsonBuilder.append("]");
+        
+        JOptionPane.showMessageDialog(null, "Messages stored in JSON:\n" + jsonBuilder.toString());
     }
-    
-    jsonBuilder.append("]");
-    
-    JOptionPane.showMessageDialog(null, "Messages stored in JSON:\n" + jsonBuilder.toString());
-}
 
-// Helper method to escape special characters in JSON strings
-private String escapeJsonString(String text) {
-    if (text == null) return "";
-    return text.replace("\\", "\\\\")
-               .replace("\"", "\\\"")
-               .replace("\n", "\\n")
-               .replace("\r", "\\r")
-               .replace("\t", "\\t");
-}
+    // Helper method to escape special characters in JSON strings
+    private String escapeJsonString(String text) {
+        if (text == null) return "";
+        return text.replace("\\", "\\\\")
+                   .replace("\"", "\\\"")
+                   .replace("\n", "\\n")
+                   .replace("\r", "\\r")
+                   .replace("\t", "\\t");
+    }
+
+    // Methods to populate arrays
+    public static void addSentMessage(String messageID, String recipient, String message, String hash) {
+        sentMessages.add(message);
+        messageIDs.add(messageID);
+        messageHashes.add(hash);
+        recipients.add(recipient);
+    }
+
+    public static void addDisregardedMessage(String messageID, String message) {
+        disregardedMessages.add(message);
+        messageIDs.add(messageID);
+    }
+
+    public static void addStoredMessage(String messageID, String recipient, String message, String hash) {
+        storedMessages.add(message);
+        messageIDs.add(messageID);
+        messageHashes.add(hash);
+        recipients.add(recipient);
+    }
 }
